@@ -1,17 +1,21 @@
 const INITIAL_STATE = {
-  wallet: {
-    currencies: [], // array de string
-    expenses: [], // array de objetos, com cada objeto tendo as chaves id, value, currency, method, tag, description e exchangeRates
-    editor: false, // valor booleano que indica de uma despesa está sendo editada
-    idToEdit: 0, // valor numérico que armazena o id da despesa que esta sendo editada
-  },
+  currencies: [],
+  expenses: [],
+  editor: false,
+  idToEdit: 0,
 };
 
-const walletReducer = (state = INITIAL_STATE, action) => {
+const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+  case 'REQUEST_SUCESS':
+    return {
+      ...state,
+      currencies: Object.entries(action.coins).map((element) => element[0])
+        .filter((coins) => coins !== 'USDT'),
+    };
   default:
     return state;
   }
 };
 
-export default walletReducer;
+export default wallet;
