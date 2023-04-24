@@ -13,6 +13,11 @@ const wallet = (state = INITIAL_STATE, action) => {
       currencies: Object.entries(action.coins).map((element) => element[0])
         .filter((coins) => coins !== 'USDT'),
     };
+  case 'ADD_EXPENSES':
+    return {
+      ...state,
+      expenses: [...state.expenses, action.expenses],
+    };
   default:
     return state;
   }
