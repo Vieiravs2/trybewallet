@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { delExpenses } from '../redux/actions/index';
 
 class Table extends Component {
-  deleteExpense = (index) => {
+  deleteExpense = (id) => {
     const { expenses, dispatch } = this.props;
-    const idFilter = expenses.filter((element, indexMap) => indexMap !== index);
+    const idFilter = expenses.filter((element) => element.id !== id);
     dispatch(delExpenses(idFilter));
   };
 
@@ -29,11 +29,11 @@ class Table extends Component {
             </tr>
           </thead>
           <tbody>
-            { expenses.map((element, index) => {
+            { expenses.map((element) => {
               const rate = Number(element.exchangeRates[element.currency].ask);
               const converted = rate * Number(element.value);
               return (
-                <tr key={ index }>
+                <tr key={ element.id }>
                   <td>{ element.description }</td>
                   <td>{ element.tag }</td>
                   <td>{ element.method }</td>
@@ -45,7 +45,7 @@ class Table extends Component {
                   <td>
                     <button
                       data-testid="delete-btn"
-                      onClick={ () => this.deleteExpense(index) }
+                      onClick={ () => this.deleteExpense(element.id) }
                     >
                       Excluir
                     </button>
