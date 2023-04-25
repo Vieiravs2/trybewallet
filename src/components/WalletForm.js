@@ -50,8 +50,8 @@ class WalletForm extends Component {
 
     dispatch(addExpenses(expensesAdd));
 
-    this.setState((prevState) => ({
-      id: prevState.id + 1,
+    this.setState(() => ({
+      id: id + 1,
       value: '',
       description: '',
     }));

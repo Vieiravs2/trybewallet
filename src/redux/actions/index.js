@@ -17,6 +17,11 @@ export const addExpenses = (expenses) => ({
   expenses,
 });
 
+export const delExpenses = (expenses) => ({
+  type: 'DEL_EXPENSES',
+  expenses,
+});
+
 export const requestAPI = () => (dispatch) => {
   dispatch(requestStarted());
   fetch('https://economia.awesomeapi.com.br/json/all')
