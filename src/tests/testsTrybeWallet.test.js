@@ -3,9 +3,59 @@ import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWith';
 import App from '../App';
+import Wallet from '../pages/Wallet';
 import WalletForm from '../components/WalletForm';
+import mockData from './helpers/mockData';
 
 const emailString = 'teste@teste.com';
+const stringValueInput = 'value-input';
+const newMock = {
+  wallet: {
+    currencies: [
+      'USD',
+      'CAD',
+      'GBP',
+      'ARS',
+      'BTC',
+      'LTC',
+      'EUR',
+      'JPY',
+      'CHF',
+      'AUD',
+      'CNY',
+      'ILS',
+      'ETH',
+      'XRP',
+      'DOGE',
+    ],
+    expenses: [
+      {
+        id: 0,
+        value: '5',
+        currency: 'USD',
+        description: '',
+        method: 'Dinheiro',
+        tag: 'Alimentação',
+        exchangeRates: mockData,
+      },
+      {
+        id: 1,
+        value: '6',
+        currency: 'USD',
+        description: '',
+        method: 'Dinheiro',
+        tag: 'Alimentação',
+        exchangeRates: mockData,
+      },
+    ],
+    editor: false,
+    idToEdit: 2,
+    priceTotal: '54.21',
+    object: {
+      value: '0',
+    },
+  },
+};
 
 describe('Desenvolva testes para atingir 60% de cobertura total da aplicação', () => {
   it('Testa se o Componente Login está sendo renderizado', () => {
@@ -70,7 +120,7 @@ describe('Desenvolva testes para atingir 60% de cobertura total da aplicação',
 
   it('Testa se o WalletForm renderiza', () => {
     renderWithRouterAndRedux(<WalletForm />);
-    const valueInput = screen.getByTestId('value-input');
+    const valueInput = screen.getByTestId(stringValueInput);
     expect(valueInput).toBeInTheDocument();
     userEvent.type(valueInput, '1000');
     expect(valueInput.value).toBe('1000');
@@ -78,7 +128,7 @@ describe('Desenvolva testes para atingir 60% de cobertura total da aplicação',
 
   it('Testa se o WalletForm é renderizado', async () => {
     const { store } = renderWithRouterAndRedux(<WalletForm />);
-    const valueInput = screen.getByTestId('value-input');
+    const valueInput = screen.getByTestId(stringValueInput);
     userEvent.type(valueInput, '1000');
     const addBtn = screen.getByRole('button', {
       name: /adicionar despesa/i,
@@ -88,5 +138,29 @@ describe('Desenvolva testes para atingir 60% de cobertura total da aplicação',
       const globalState = store.getState();
       expect(globalState.wallet.expenses[0].value).toBe('1000');
     });
+  });
+
+  it('Testando se o preço total de despezas diminui', async () => {
+    renderWithRouterAndRedux(<Wallet />, { initialEntries: ['/carteira'], initialState: newMock });
+
+    const inputValue = screen.getByTestId(stringValueInput);
+    const expenseAdd = screen.getByRole('button', { name: 'Adicionar despesa' });
+
+    expect(inputValue).toBeInTheDocument();
+    expect(expenseAdd).toBeInTheDocument();
+
+    userEvent.type(inputValue, '5');
+    userEvent.click(expenseAdd);
+
+    userEvent.type(inputValue, '6');
+    userEvent.click(expenseAdd);
+
+    const expenseDel = await screen.findAllByRole('button', { name: /excluir/i });
+
+    expect(expenseDel).toHaveLength(2);
+    userEvent.click(expenseDel[1]);
+    const priceTotal = await screen.findByTestId('total-field');
+
+    expect(Number(priceTotal.innerHTML)).toBeCloseTo(23.77);
   });
 });
